@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Club Gym Manager, full demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F5EF;--card:#FFFFFF;--ink:#16241E;--mute:#5E6E66;--line:#D5DDD4;--turf:#0F3D2E;--turf-ink:#F2F5EF;--amber:#F2B632;--ok:#1C7A4B;--bad:#B3372B;--warn:#946200;--okbg:#DCEFE3;--badbg:#F6DDD9;--warnbg:#FBEDC8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1612;--card:#15231C;--ink:#E8EEE7;--mute:#93A59B;--line:#27382F;--turf:#0A2A20;--turf-ink:#E8EEE7;--ok:#6CCB94;--bad:#F0877B;--warn:#F2B632;--okbg:#173B2A;--badbg:#45211D;--warnbg:#3F3211}}
+:root[data-theme="dark"]{--bg:#0D1612;--card:#15231C;--ink:#E8EEE7;--mute:#93A59B;--line:#27382F;--turf:#0A2A20;--turf-ink:#E8EEE7;--ok:#6CCB94;--bad:#F0877B;--warn:#F2B632;--okbg:#173B2A;--badbg:#45211D;--warnbg:#3F3211}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,system-ui,sans-serif;font-size:16px;line-height:1.45}
+h1,h2,h3{font-family:'Barlow Condensed',Impact,sans-serif;margin:0;letter-spacing:.01em}
+header{background:var(--turf);color:var(--turf-ink);padding:14px 16px 0}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand h1{font-size:28px;font-weight:700}
+.brand small{display:block;font-family:Barlow;font-size:13px;opacity:.75}
+.who{display:flex;gap:8px;flex-wrap:wrap}
+select,button,input{font:inherit;color:inherit}
+select{background:rgba(255,255,255,.12);color:var(--turf-ink);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 8px}
+select option{color:#16241E}
+nav{display:flex;gap:2px;margin-top:12px;overflow-x:auto}
+nav button{background:none;border:0;color:var(--turf-ink);opacity:.7;padding:10px 14px;font-weight:600;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{opacity:1;border-bottom-color:var(--amber)}
+nav button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+main{max-width:920px;margin:0 auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.stat b{display:block;font-family:'Barlow Condensed';font-size:40px;line-height:1}
+.stat span{color:var(--mute);font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px}
+.panel h2{font-size:22px;margin-bottom:10px}
+.scan{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.scan select{background:var(--bg);color:var(--ink);border-color:var(--line);flex:1;min-width:180px}
+.btn{background:var(--turf);color:var(--turf-ink);border:0;border-radius:6px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn.alt{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.result{margin-top:12px;padding:12px;border-radius:6px;font-weight:600}
+.result.ok{background:var(--okbg);color:var(--ok)}.result.bad{background:var(--badbg);color:var(--bad)}.result.warn{background:var(--warnbg);color:var(--warn)}
+ul.list{list-style:none;margin:0;padding:0}
+ul.list li{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--line);align-items:center}
+ul.list li:first-child{border-top:0}
+.tag{font-size:13px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.tag.ok{background:var(--okbg);color:var(--ok)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.mute{background:var(--bg);color:var(--mute);border:1px solid var(--line)}
+.bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:6px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--turf)}
+.bar i.full{background:var(--bad)}
+.sess{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.sess:first-child{border-top:0}
+.sess>div:first-child{flex:1;min-width:0}
+.sess small,.muted{color:var(--mute)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{text-align:left;padding:9px 8px;border-top:1px solid var(--line);font-size:15px}
+th{border-top:0;color:var(--mute);font-weight:500;font-size:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:none;border:1px solid var(--line);border-radius:99px;padding:4px 12px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--turf);color:var(--turf-ink);border-color:var(--turf)}
+.note{font-size:14px;color:var(--mute);margin:0 0 12px}
+.ex{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.ex:first-child{border-top:0}
+.ex b{font-weight:600}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.form label,.check{font-size:14px;color:var(--mute);display:block}
+.form input,.form select{display:block;width:100%;margin-top:4px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:9px 8px;font-size:16px}
+.check{margin-top:12px;display:flex;gap:8px;align-items:flex-start}.check input{margin-top:4px}
+.pass{display:flex;gap:16px;align-items:center;background:var(--turf);color:var(--turf-ink);border-radius:8px;padding:16px;margin-top:16px;flex-wrap:wrap}
+.pass h3{font-size:26px}.pass p{margin:2px 0;opacity:.85;font-size:14px}
+.pass svg{background:#fff;border-radius:6px;padding:6px}
+.poster{display:flex;gap:20px;align-items:center;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:16px}.poster h3{font-size:30px}.poster p{margin:4px 0 0;color:var(--mute)}.poster svg{border:1px solid var(--line);border-radius:6px}
+a.btn{display:inline-block;text-decoration:none}
+.vb{background:rgba(255,255,255,.12);color:var(--turf-ink);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 10px;cursor:pointer}.vb[aria-pressed="true"]{background:var(--amber);color:#16241E;border-color:var(--amber)}
+.phone{max-width:380px;margin:0 auto;border:8px solid #16241E;border-radius:32px;background:var(--bg);overflow:hidden}.phonebar{background:var(--turf);color:var(--turf-ink);padding:14px 16px;font-family:'Barlow Condensed';font-size:22px}.phonebody{padding:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div><h1>Club Gym Manager</h1><small>Full demo with sample data</small></div>
+    <div class="who"><button class="vb" data-view="staff">Staff screen</button><button class="vb" data-view="member">Member phone</button>
+      <label><span class="muted" style="color:inherit;opacity:.75;font-size:13px">Signed in as </span>
+        <select id="role" aria-label="Role"><option value="front">Front desk</option><option value="admin">Admin</option><option value="coach">Coach</option><option value="physio">Physio</option></select></label>
+    </div>
+  </div>
+  <nav id="tabs" role="tablist"></nav>
+</header>
+<p id="rn" style="margin:0;padding:8px 16px;font-size:13px;background:var(--turf);color:var(--turf-ink);opacity:.9"></p>
+<main id="view"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const members=[
+{id:1,name:'Ebrima Sanneh',type:'Player',plan:'Squad',days:120,status:'active',injury:null},
+{id:2,name:'Modou Ceesay',type:'Player',plan:'Squad',days:120,status:'hold',injury:'Hamstring strain, grade 1. Return to play in 10 days.'},
+{id:3,name:'Lamin Darboe',type:'Player',plan:'Squad',days:120,status:'active',injury:null},
+{id:4,name:'Omar Jallow',type:'Academy',plan:'Academy',days:40,status:'active',injury:null},
+{id:5,name:'Buba Touray',type:'Academy',plan:'Academy',days:5,status:'active',injury:null},
+{id:6,name:'Fatou Bojang',type:'Staff',plan:'Staff',days:200,status:'active',injury:null},
+{id:7,name:'Isatou Njie',type:'Public',plan:'Monthly D1,500',days:12,status:'active',injury:null},
+{id:8,name:'Alieu Camara',type:'Public',plan:'Monthly D1,500',days:-3,status:'expired',injury:null},
+{id:9,name:'Sulayman Jatta',type:'Public',plan:'Monthly D1,500',days:3,status:'active',injury:null},
+{id:10,name:'Mariama Gaye',type:'Public',plan:'Quarterly D4,000',days:60,status:'active',injury:null}];
+const sessions=[
+{id:1,name:'Strength, first team',time:'Today 08:00',coach:'Coach Manneh',cap:12,booked:[1,3]},
+{id:2,name:'Mobility and recovery',time:'Today 11:00',coach:'Coach Sowe',cap:10,booked:[1,2,3,4,5,6,7,8,9,10].slice(0,10)},
+{id:3,name:'Academy conditioning',time:'Today 16:00',coach:'Coach Manneh',cap:15,booked:[4,5]},
+{id:4,name:'Open gym',time:'Today 18:00',coach:'Front desk',cap:20,booked:[7,9,10]}];
+const program=[['Back squat','4 x 5','90 kg'],['Romanian deadlift','3 x 8','80 kg'],['Nordic hamstring curl','3 x 6','Bodyweight'],['Box jump','4 x 4','60 cm']];
+const feed=[];const logs={};let view='staff',myReg=null;
+const PLAN={'Squad':[365,0],'Academy':[365,3000],'Staff':[365,0],'Monthly D1,500':[30,1500],'Quarterly D4,000':[90,4000]};
+const payments=[['Isatou Njie',1500,'Wave'],['Sulayman Jatta',1500,'Cash'],['Mariama Gaye',4000,'Afrimoney'],['Omar Jallow',3000,'Cash'],['Buba Touray',3000,'Card']].map(a=>({name:a[0],amt:a[1],method:a[2],time:'earlier'}));
+const audit=[{t:'08:05',who:'admin',msg:'Sample data loaded'}];
+const pc=()=>members.filter(m=>m.status==='pending').length;
+const fmt=n=>'D'+(n||0).toLocaleString();
+const log=(msg,who)=>audit.push({t:now(),who:who||role(),msg});
+const canPay=()=>role()==='front'||role()==='admin';
+let tab='Today',typeFilter='All',selMember=1,banner=null;
+const ACCESS={admin:['Today','Approvals','Sessions','Members','Training','Reports','Sign-up QR'],front:['Today','Approvals','Sessions','Members','Sign-up QR'],coach:['Today','Sessions','Members','Training'],physio:['Members','Training']};
+const ROLENOTE={admin:'Admin: full access, including reports',front:'Front desk: check-in, approvals, payments, bookings',coach:'Coach: sessions, member status, training programs',physio:'Physio: medical holds and training clearance'};
+const visibleTabs=()=>ACCESS[role()]||ACCESS.front;
+let lastPass=null;
+const plans={Player:[['Squad',365]],Academy:[['Academy',365]],Staff:[['Staff',365]],Public:[['Monthly D1,500',30],['Quarterly D4,000',90]]};
+const $=s=>document.querySelector(s);
+const role=()=>$('#role').value;
+const byId=id=>members.find(m=>m.id===id);
+const now=()=>new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+const statusTag=m=>m.status==='active'?(m.days<=7?'<span class="tag warn">Expires in '+m.days+' days</span>':'<span class="tag ok">Active</span>'):m.status==='expired'?'<span class="tag bad">Expired</span>':m.status==='pending'?'<span class="tag mute">Pending approval</span>':'<span class="tag warn">Medical hold</span>';
+const memberOptions=()=>members.filter(m=>m.status!=='rejected').map(m=>`<option value="${m.id}"${m.id===selMember?' selected':''}>${m.name} (${m.type})</option>`).join('');
+
+function renderTabs(){
+  $('#tabs').innerHTML=visibleTabs().map(t=>`<button role="tab" aria-selected="${t===tab}" data-tab="${t}">${t}${t==='Approvals'&&pc()?' ('+pc()+')':''}</button>`).join('');
+}
+function today(){
+  const inGym=feed.filter(f=>f.ok).length;
+  const expiring=members.filter(m=>m.status==='active'&&m.days<=7).length;
+  return `<div class="grid">
+    <div class="stat"><b>${inGym}</b><span>Checked in today</span></div>
+    <div class="stat"><b>${members.filter(m=>m.status==='active').length}</b><span>Active members</span></div>
+    <div class="stat"><b>${expiring}</b><span>Expiring within 7 days</span></div>
+    <div class="stat"><b>${members.filter(m=>m.status==='hold').length}</b><span>On medical hold</span></div>
+    <div class="stat"><b>${pc()}</b><span>Awaiting approval</span></div></div>
+  ${pc()&&canPay()?`<div class="panel"><b>${pc()} registration${pc()>1?'s':''} waiting for approval.</b> <button class="btn" data-tab="Approvals" style="margin-left:8px">Review</button></div>`:''}
+  ${canPay()?`<div class="panel"><h2>Check-in</h2>
+    <p class="note">Pick a member and tap Scan to try the QR check-in rules.</p>
+    <div class="scan"><select id="scanSel" aria-label="Member to scan">${memberOptions()}</select><button class="btn" id="scan">Scan QR</button></div>
+    ${banner?`<div class="result ${banner.k}" role="status">${banner.t}</div>`:''}</div>`:''}
+  <div class="panel"><h2>Recent arrivals</h2>
+    ${feed.length?'<ul class="list">'+feed.slice().reverse().map(f=>`<li><span>${f.name} <span class="muted">${f.time}</span></span><span class="tag ${f.ok?'ok':'bad'}">${f.ok?'Checked in':'Denied'}</span></li>`).join('')+'</ul>':'<p class="muted">No scans yet. Scan a member above.</p>'}</div>`;
+}
+function sessionsView(){
+  const m=byId(selMember);
+  return `<div class="panel"><h2>Book a session</h2>
+    <div class="scan"><label for="bkSel" class="muted">Booking for</label><select id="bkSel" style="background:var(--bg);color:var(--ink);border-color:var(--line)">${memberOptions()}</select></div>
+    ${banner?`<div class="result ${banner.k}" role="status">${banner.t}</div>`:''}</div>
+  <div class="panel">${sessions.map(s=>{
+    const full=s.booked.length>=s.cap,mine=s.booked.includes(selMember),pct=Math.round(s.booked.length/s.cap*100);
+    return `<div class="sess"><div><b>${s.name}</b><br><small>${s.time}, ${s.coach}</small>
+      <div class="bar" aria-hidden="true"><i class="${full?'full':''}" style="width:${pct}%"></i></div>
+      <small>${s.booked.length} of ${s.cap} places taken</small></div>
+      <button class="btn ${mine?'alt':''}" data-book="${s.id}" ${(!mine&&full)?'disabled':''}>${mine?'Cancel':full?'Full':'Book'}</button></div>`}).join('')}</div>`;
+}
+function membersView(){
+  const types=['All','Player','Academy','Staff','Public'];
+  const list=members.filter(m=>m.status!=='rejected'&&(typeFilter==='All'||m.type===typeFilter));
+  const canSee=role()!=='front';
+  return `<div class="panel"><h2>Members</h2>${banner?`<div class="result ${banner.k}" role="status">${banner.t}</div>`:''}
+    <div class="chips">${types.map(t=>`<button class="chip" aria-pressed="${t===typeFilter}" data-type="${t}">${t}</button>`).join('')}${canPay()?'<button class="btn" data-tab="Sign-up QR" style="margin-left:auto">Sign-up QR</button>':''}</div>
+    <div class="tablewrap"><table><thead><tr><th>Name</th><th>Type</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead><tbody>
+    ${list.map(m=>`<tr><td>${m.name}</td><td>${m.type}</td><td>${m.plan}</td><td>${statusTag(m)}${m.injury?`<div class="muted" style="font-size:13px;margin-top:4px">${canSee?m.injury:'Medical details restricted'}</div>`:''}</td><td>${actions(m)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="note" style="margin-top:10px">Switch the role at the top to see how injury details are hidden from the front desk.</p></div>`;
+}
+function trainingView(){
+  const m=byId(selMember),l=logs[selMember]||[];
+  return `<div class="panel"><h2>Training program</h2>
+    <div class="scan"><label for="trSel" class="muted">Member</label><select id="trSel" style="background:var(--bg);color:var(--ink);border-color:var(--line)">${memberOptions()}</select></div>
+    ${m.status==='hold'?`<div class="result warn">${m.name} is on medical hold. ${role()==='front'?'Training is paused.':'Upper body and rehab work only.'}</div>`:''}
+    <div style="margin-top:8px">${program.map((p,i)=>`<div class="ex"><span><b>${p[0]}</b><br><small class="muted">${p[1]}, ${p[2]}</small></span><button class="btn alt" data-log="${i}" ${m.status!=='active'?'disabled':''}>Log set</button></div>`).join('')}</div></div>
+  <div class="panel"><h2>Logged today</h2>${l.length?'<ul class="list">'+l.slice().reverse().map(x=>`<li><span>${x.ex} <span class="muted">${x.time}</span></span><span class="tag ok">Done</span></li>`).join('')+'</ul>':'<p class="muted">Nothing logged yet. Tap Log set on an exercise.</p>'}</div>`;
+}
+const JOIN='https://claude.ai/artifact/17M2VnRrYQQgm75rkMsf6j';
+function qrSvg(text,px){
+  if(typeof qrcode==='undefined')return '<p class="muted">QR library did not load. Refresh the page.</p>';
+  const q=qrcode(0,'M');q.addData(text);q.make();const n=q.getModuleCount();let d='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))d+=`M${c+4} ${r+4}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n+8} ${n+8}" width="${px}" height="${px}" role="img" aria-label="QR code that opens the registration page"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="#0F3D2E"/></svg>`;
+}
+function registerView(){
+  return `<div class="panel"><h2>Sign-up QR code</h2>
+  <p class="note">Print this and put it at the gym entrance and on club noticeboards. Anyone who scans it with their phone camera opens the registration page.</p>
+  <div class="poster">${qrSvg(JOIN,220)}<div><h3>Join the Club Gym</h3><p>Scan to register, then show your pass at the front desk.</p></div></div>
+  <div class="scan" style="margin-top:12px"><button class="btn" data-sim="1">Simulate a member scanning</button> <a class="btn alt" href="${JOIN}" target="_blank" rel="noopener">Open standalone page</a></div>
+  <p class="note" style="margin-top:12px">People who register this way appear under Approvals. The front desk records payment and activates them.</p></div>`;
+}
+function actions(m){const r=role();let h='';
+ if(canPay()&&(m.status==='expired'||(m.status==='active'&&m.days<=7)))h+=`<button class="btn alt" data-renew="${m.id}">Renew</button>`;
+ if(r==='physio'){if(m.status==='active')h+=`<button class="btn alt" data-hold="${m.id}">Set hold</button>`;if(m.status==='hold')h+=`<button class="btn alt" data-clear="${m.id}">Clear to train</button>`}
+ return h||'<span class="muted">-</span>'}
+function approvalsView(){
+ const L=members.filter(m=>m.status==='pending'),opt=sel=>['Cash','Wave','Afrimoney','Card','Club account'].map(o=>`<option${o===sel?' selected':''}>${o}</option>`).join('');
+ return `<div class="panel"><h2>Approvals</h2>${banner?`<div class="result ${banner.k}" role="status">${banner.t}</div>`:''}
+ ${canPay()?'<p class="note">Record the payment, then approve to activate the membership and send the SMS.</p>':'<p class="note">Only front desk or admin can approve. Switch role at the top.</p>'}
+ ${L.length?L.map(m=>`<div class="sess" style="flex-wrap:wrap"><div><b>${m.name}</b> <span class="tag mute">${m.type}</span><br><small>${m.phone}, ${m.plan}, ${m.price?fmt(m.price):'club account'}${m.age<18?', under 18':''}, consent ${m.consent?'given':'missing'}</small></div>
+ <div class="scan"><select id="pm_${m.id}" aria-label="Payment method" style="background:var(--bg);color:var(--ink);border-color:var(--line);flex:none;min-width:0">${opt(m.price?'Cash':'Club account')}</select><input id="pr_${m.id}" placeholder="Reference" style="width:120px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px"><button class="btn" data-approve="${m.id}" ${canPay()?'':'disabled'}>Approve</button><button class="btn alt" data-reject="${m.id}" ${canPay()?'':'disabled'}>Decline</button></div></div>`).join(''):'<p class="muted">Nothing waiting. New QR registrations appear here.</p>'}</div>`}
+function reportsView(){
+ if(role()!=='admin')return '<div class="panel"><h2>Reports</h2><p class="note">Reports are for admin only. Switch role at the top.</p></div>';
+ const total=payments.reduce((a,p)=>a+p.amt,0),by={};payments.forEach(p=>by[p.method]=(by[p.method]||0)+p.amt);
+ const mx=Math.max(1,...Object.values(by)),st=x=>members.filter(m=>m.status===x).length;
+ return `<div class="grid"><div class="stat"><b>${fmt(total)}</b><span>Revenue recorded</span></div><div class="stat"><b>${payments.length}</b><span>Payments</span></div><div class="stat"><b>${st('active')}</b><span>Active members</span></div><div class="stat"><b>${st('expired')}</b><span>Expired</span></div></div>
+ <div class="panel"><h2>Revenue by payment method</h2>${Object.entries(by).map(([k,v])=>`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${k}</span><b>${fmt(v)}</b></div><div class="bar"><i style="width:${v/mx*100}%"></i></div></div>`).join('')}</div>
+ <div class="panel"><h2>Audit log</h2><ul class="list">${audit.slice(-8).reverse().map(a=>`<li><span>${a.msg}</span><span class="muted">${a.who}, ${a.t}</span></li>`).join('')}</ul></div>`}
+function fillM(){const t=$('#m_type');if(!t)return;const pub=t.value==='Public';$('#m_plan').innerHTML=plans[t.value].map(p=>`<option>${p[0]}</option>`).join('');$('#m_pl').style.display=pub?'':'none';$('#m_pn').textContent=pub?'':'Your plan is assigned by the club: '+plans[t.value][0][0]+'.'}
+function memberView(){
+ const m=myReg&&byId(myReg);let body;
+ if(!m){body=`<div class="form" style="grid-template-columns:1fr">
+  <label>Full name<input id="m_name" autocomplete="off"></label><label>Phone<input id="m_phone" inputmode="tel" placeholder="+220 7XXXXXX"></label>
+  <label>Date of birth<input id="m_dob" type="date"></label>
+  <label>I am joining as<select id="m_type"><option>Public</option><option>Player</option><option>Academy</option></select></label>
+  <label id="m_pl">Plan<select id="m_plan"></select></label><p class="note" id="m_pn"></p>
+  <label>Emergency contact name<input id="m_ecn"></label><label>Emergency contact phone<input id="m_ecp" inputmode="tel"></label></div>
+  <label class="check"><input type="checkbox" id="m_consent"><span>I agree the club may store my health and performance data (guardian agrees if under 18). Required for players, academy and under 18.</span></label>
+  <div id="m_msg" role="alert"></div><button class="btn" id="mReg" style="width:100%;margin-top:12px">Register</button>`}
+ else{const stt={active:'Active, '+m.days+' days left',pending:'Waiting for activation at the front desk',expired:'Membership expired',hold:'Active, medical hold',rejected:'Registration declined, see the front desk'}[m.status];
+  body=`<div class="pass">${qrSvg('GYM-'+String(m.id).padStart(4,'0'),132)}<div><h3>${m.name}</h3><p>Member ID GYM-${String(m.id).padStart(4,'0')}</p><p>${m.type}, ${m.plan}</p><p><b>${stt}</b></p></div></div>
+  <p class="note">${m.status==='pending'?'Show this pass at the front desk, pay, and wait for the SMS. Then switch to the Staff screen to approve it.':'Scan this pass at the gym door.'}</p><button class="btn alt" id="mAgain" style="width:100%">Register another person</button>`}
+ return `<div class="phone"><div class="phonebar">Club Gym, member phone</div><div class="phonebody">${body}</div></div><p style="text-align:center;margin-top:14px"><button class="btn" data-view="staff">Back to staff screen</button></p>`}
+function memberRegister(){
+ const v=id=>$('#'+id).value.trim(),ok=x=>/^(\+?220)?\d{7}$/.test(x.replace(/[\s-]/g,'')),errs=[];
+ const type=v('m_type'),dob=v('m_dob'),age=dob?Math.floor((Date.now()-new Date(dob))/31557600000):null,ph=v('m_phone').replace(/\D/g,'').slice(-7);
+ if(!v('m_name'))errs.push('Enter your full name.');
+ if(!ok(v('m_phone')))errs.push('Enter a 7-digit Gambian phone number.');else if(members.some(m=>m.phone&&m.phone.replace(/\D/g,'').slice(-7)===ph))errs.push('This phone is already registered.');
+ if(!dob||age<0||age>100)errs.push('Enter a valid date of birth.');
+ if(!v('m_ecn')||!ok(v('m_ecp')))errs.push('Add an emergency contact with a valid phone.');
+ if((type!=='Public'||age<18)&&!$('#m_consent').checked)errs.push('Consent to store health and performance data is required.');
+ if(errs.length){$('#m_msg').innerHTML='<div class="result bad">'+errs.join('<br>')+'</div>';return}
+ const plan=v('m_plan'),id=Math.max(...members.map(m=>m.id))+1;
+ members.push({id,name:v('m_name'),type,plan,days:0,status:'pending',injury:null,phone:v('m_phone'),age,consent:$('#m_consent').checked,price:PLAN[plan][1]});
+ myReg=id;log('Registration received: '+v('m_name'),'member');render()}
+function render(){
+  if(!visibleTabs().includes(tab))tab=visibleTabs()[0];
+  renderTabs();
+  $('#rn').textContent=ROLENOTE[role()]||'';
+  document.querySelectorAll('.vb').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===view));
+  $('#tabs').style.display=view==='member'?'none':'';
+  $('#view').innerHTML=view==='member'?memberView():{Today:today,Sessions:sessionsView,Members:membersView,Training:trainingView,'Sign-up QR':registerView,Approvals:approvalsView,Reports:reportsView}[tab]();
+  if(view==='member'&&!myReg)fillM();
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.view){view=t.dataset.view;banner=null;render();return}
+  if(t.dataset.sim){view='member';myReg=null;render();return}
+  if(t.id==='mReg'){memberRegister();return}
+  if(t.id==='mAgain'){myReg=null;render();return}
+  if(t.dataset.approve){const m=byId(+t.dataset.approve),meth=$('#pm_'+m.id).value,ref=$('#pr_'+m.id).value.trim();
+    if(meth!=='Cash'&&meth!=='Club account'&&!ref){banner={k:'bad',t:'Enter the '+meth+' reference for '+m.name+'.'};render();return}
+    m.status='active';m.days=PLAN[m.plan][0];payments.push({name:m.name,amt:m.price,method:meth,time:now()});
+    log('Approved '+m.name+', '+fmt(m.price)+' by '+meth);banner={k:'ok',t:'Activated '+m.name+'. SMS sent to '+m.phone+': your membership is active.'};render();return}
+  if(t.dataset.reject){const m=byId(+t.dataset.reject);m.status='rejected';log('Declined '+m.name);banner={k:'warn',t:'Declined '+m.name+'.'};render();return}
+  if(t.dataset.renew){const m=byId(+t.dataset.renew),pl=PLAN[m.plan];m.status='active';m.days=Math.max(m.days,0)+pl[0];payments.push({name:m.name,amt:pl[1],method:'Cash',time:now()});log('Renewed '+m.name+', '+fmt(pl[1])+' cash');banner={k:'ok',t:'Renewed '+m.name+' for '+pl[0]+' days.'};render();return}
+  if(t.dataset.hold){const m=byId(+t.dataset.hold);m.status='hold';m.injury='Muscle strain, under assessment. Physio clearance needed before training.';log('Medical hold set for '+m.name);banner={k:'warn',t:m.name+' is now on medical hold.'};render();return}
+  if(t.dataset.clear){const m=byId(+t.dataset.clear);m.status='active';m.injury=null;log('Cleared '+m.name+' to train');banner={k:'ok',t:m.name+' cleared to train.'};render();return}
+  if(t.dataset.tab){view='staff';tab=t.dataset.tab;banner=null;if(tab!=='Sign-up QR')lastPass=null;render();return}
+  if(t.id==='scan'){
+    selMember=+$('#scanSel').value;const m=byId(selMember);
+    if(m.status==='pending'){banner={k:'warn',t:m.name+': registration pending. Activate at the front desk first.'};feed.push({name:m.name,time:now(),ok:false})}
+    else if(m.status==='expired'){banner={k:'bad',t:m.name+': membership expired. Renew at the front desk.'};feed.push({name:m.name,time:now(),ok:false})}
+    else if(m.status==='hold'){banner={k:'warn',t:m.name+': medical hold. Sent to the physio for clearance.'};feed.push({name:m.name,time:now(),ok:false})}
+    else{banner={k:'ok',t:m.name+' checked in at '+now()+'.'+(m.days<=7?' Membership ends in '+m.days+' days.':'')};feed.push({name:m.name,time:now(),ok:true})}
+    render();return}
+  if(t.dataset.book){
+    const s=sessions.find(x=>x.id===+t.dataset.book),m=byId(selMember);
+    if(s.booked.includes(selMember)){s.booked=s.booked.filter(x=>x!==selMember);banner={k:'ok',t:'Booking cancelled for '+m.name+'.'}}
+    else if(m.status==='expired'||m.status==='pending'){banner={k:'bad',t:m.name+' cannot book: membership not active.'}}
+    else if(m.status==='hold'&&s.name.startsWith('Strength')){banner={k:'warn',t:m.name+' is on medical hold and cannot join strength sessions.'}}
+    else{s.booked.push(selMember);banner={k:'ok',t:m.name+' booked into '+s.name+'.'}}
+    render();return}
+  if(t.dataset.type){typeFilter=t.dataset.type;render();return}
+  if(t.dataset.log!==undefined){(logs[selMember]=logs[selMember]||[]).push({ex:program[+t.dataset.log][0],time:now()});render()}
+});
+document.addEventListener('change',e=>{
+  if(['scanSel','bkSel','trSel'].includes(e.target.id)){selMember=+e.target.value;banner=null;render()}
+  if(e.target.id==='role'){banner=null;render()}
+  if(e.target.id==='m_type')fillM();
+});
+render();
+</script>
+</body>
+</html>

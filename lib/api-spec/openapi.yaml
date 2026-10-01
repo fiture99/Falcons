@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: gym
+    description: Club Gym Manager operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,377 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /gym/dashboard:
+    get:
+      operationId: getGymDashboard
+      tags: [gym]
+      summary: Get gym dashboard statistics
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymDashboard"
+  /gym/activity:
+    get:
+      operationId: getGymActivity
+      tags: [gym]
+      summary: Get recent gym activity
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymActivity"
+  /gym/members:
+    get:
+      operationId: listGymMembers
+      tags: [gym]
+      summary: List and search members
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Member list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymMember"
+    post:
+      operationId: createGymMember
+      tags: [gym]
+      summary: Create a member record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymMemberInput"
+      responses:
+        "201":
+          description: Created member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymMember"
+  /gym/members/{id}:
+    patch:
+      operationId: updateGymMember
+      tags: [gym]
+      summary: Update a member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymMemberUpdate"
+      responses:
+        "200":
+          description: Updated member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymMember"
+        "404":
+          description: Member not found
+    delete:
+      operationId: deleteGymMember
+      tags: [gym]
+      summary: Delete a member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Member deleted
+        "404":
+          description: Member not found
+  /gym/approvals:
+    get:
+      operationId: listGymApprovals
+      tags: [gym]
+      summary: List pending member registrations
+      responses:
+        "200":
+          description: Pending approvals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymMember"
+  /gym/members/{id}/approval:
+    post:
+      operationId: decideGymMemberApproval
+      tags: [gym]
+      summary: Approve or reject a member registration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymApprovalInput"
+      responses:
+        "200":
+          description: Updated member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymMember"
+        "404":
+          description: Member not found
+  /gym/sessions:
+    get:
+      operationId: listGymSessions
+      tags: [gym]
+      summary: List scheduled sessions and bookings
+      responses:
+        "200":
+          description: Session list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymSession"
+    post:
+      operationId: createGymSession
+      tags: [gym]
+      summary: Create a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymSessionInput"
+      responses:
+        "201":
+          description: Created session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymSession"
+  /gym/sessions/{id}:
+    patch:
+      operationId: updateGymSession
+      tags: [gym]
+      summary: Update a session
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymSessionUpdate"
+      responses:
+        "200":
+          description: Updated session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymSession"
+        "404":
+          description: Session not found
+    delete:
+      operationId: deleteGymSession
+      tags: [gym]
+      summary: Delete a session
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Session deleted
+        "404":
+          description: Session not found
+  /gym/sessions/{id}/booking:
+    post:
+      operationId: changeGymBooking
+      tags: [gym]
+      summary: Book or cancel a session
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymBookingInput"
+      responses:
+        "200":
+          description: Updated session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymSession"
+        "400":
+          description: Booking not allowed
+        "404":
+          description: Session or member not found
+  /gym/checkins:
+    get:
+      operationId: listGymCheckins
+      tags: [gym]
+      summary: List today's check-ins
+      responses:
+        "200":
+          description: Check-in activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymCheckin"
+    post:
+      operationId: createGymCheckin
+      tags: [gym]
+      summary: Check a member in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymCheckinInput"
+      responses:
+        "201":
+          description: Check-in result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymCheckin"
+  /gym/training/logs:
+    get:
+      operationId: listGymTrainingLogs
+      tags: [gym]
+      summary: List a member's training logs
+      parameters:
+        - name: memberId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Training logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymTrainingLog"
+    post:
+      operationId: createGymTrainingLog
+      tags: [gym]
+      summary: Record a completed exercise set
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymTrainingLogInput"
+      responses:
+        "201":
+          description: Training log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymTrainingLog"
+  /gym/payments:
+    get:
+      operationId: listGymPayments
+      tags: [gym]
+      summary: List payments
+      responses:
+        "200":
+          description: Payment records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymPayment"
+    post:
+      operationId: createGymPayment
+      tags: [gym]
+      summary: Record a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymPaymentInput"
+      responses:
+        "201":
+          description: Payment record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymPayment"
+  /gym/registrations:
+    post:
+      operationId: registerGymMember
+      tags: [gym]
+      summary: Submit a public member registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GymRegistrationInput"
+      responses:
+        "201":
+          description: Registration awaiting approval
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GymMember"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +406,168 @@ components:
           type: string
       required:
         - status
+    GymMember:
+      type: object
+      required: [id, name, type, plan, status, days, injury, email, phone, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { type: string }
+        plan: { type: string }
+        status: { type: string }
+        days: { type: integer }
+        injury: { type: ["string", "null"] }
+        email: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+    GymMemberInput:
+      type: object
+      required: [name, type, plan]
+      properties:
+        name: { type: string, minLength: 1 }
+        type: { type: string }
+        plan: { type: string }
+        email: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        status: { type: string }
+        days: { type: integer }
+        injury: { type: ["string", "null"] }
+    GymMemberUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        type: { type: string }
+        plan: { type: string }
+        email: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+        status: { type: string }
+        days: { type: integer }
+        injury: { type: ["string", "null"] }
+    GymApprovalInput:
+      type: object
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [approved, rejected] }
+    GymSession:
+      type: object
+      required: [id, name, startsAt, coach, capacity, bookedCount, bookedMemberIds]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        startsAt: { type: string, format: date-time }
+        coach: { type: string }
+        capacity: { type: integer }
+        bookedCount: { type: integer }
+        bookedMemberIds:
+          type: array
+          items: { type: integer }
+    GymSessionInput:
+      type: object
+      required: [name, startsAt, coach, capacity]
+      properties:
+        name: { type: string, minLength: 1 }
+        startsAt: { type: string, format: date-time }
+        coach: { type: string }
+        capacity: { type: integer, minimum: 1 }
+    GymSessionUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        startsAt: { type: string, format: date-time }
+        coach: { type: string }
+        capacity: { type: integer, minimum: 1 }
+    GymBookingInput:
+      type: object
+      required: [memberId, action]
+      properties:
+        memberId: { type: integer }
+        action: { type: string, enum: [book, cancel] }
+    GymCheckin:
+      type: object
+      required: [id, memberId, memberName, checkedInAt, allowed, message]
+      properties:
+        id: { type: integer }
+        memberId: { type: integer }
+        memberName: { type: string }
+        checkedInAt: { type: string, format: date-time }
+        allowed: { type: boolean }
+        message: { type: string }
+    GymCheckinInput:
+      type: object
+      required: [memberId]
+      properties:
+        memberId: { type: integer }
+    GymTrainingLog:
+      type: object
+      required: [id, memberId, exercise, sets, reps, load, loggedAt]
+      properties:
+        id: { type: integer }
+        memberId: { type: integer }
+        exercise: { type: string }
+        sets: { type: integer }
+        reps: { type: string }
+        load: { type: string }
+        loggedAt: { type: string, format: date-time }
+    GymTrainingLogInput:
+      type: object
+      required: [memberId, exercise, sets, reps, load]
+      properties:
+        memberId: { type: integer }
+        exercise: { type: string, minLength: 1 }
+        sets: { type: integer, minimum: 1 }
+        reps: { type: string }
+        load: { type: string }
+    GymPayment:
+      type: object
+      required: [id, memberId, memberName, amount, method, paidAt]
+      properties:
+        id: { type: integer }
+        memberId: { type: integer }
+        memberName: { type: string }
+        amount: { type: integer }
+        method: { type: string }
+        paidAt: { type: string, format: date-time }
+    GymPaymentInput:
+      type: object
+      required: [memberId, amount, method]
+      properties:
+        memberId: { type: integer }
+        amount: { type: integer, minimum: 1 }
+        method: { type: string }
+    GymRegistrationInput:
+      type: object
+      required: [name, type, plan]
+      properties:
+        name: { type: string, minLength: 1 }
+        type: { type: string }
+        plan: { type: string }
+        email: { type: ["string", "null"] }
+        phone: { type: ["string", "null"] }
+    GymDashboard:
+      type: object
+      required: [checkedInToday, activeMembers, expiringSoon, medicalHold, awaitingApproval, revenueThisMonth, attendance]
+      properties:
+        checkedInToday: { type: integer }
+        activeMembers: { type: integer }
+        expiringSoon: { type: integer }
+        medicalHold: { type: integer }
+        awaitingApproval: { type: integer }
+        revenueThisMonth: { type: integer }
+        attendance:
+          type: array
+          items:
+            type: object
+            required: [day, count]
+            properties:
+              day: { type: string }
+              count: { type: integer }
+    GymActivity:
+      type: object
+      required: [id, kind, label, detail, occurredAt]
+      properties:
+        id: { type: string }
+        kind: { type: string }
+        label: { type: string }
+        detail: { type: string }
+        occurredAt: { type: string, format: date-time }
 

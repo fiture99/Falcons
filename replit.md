@@ -1,6 +1,6 @@
-# [Project name]
+# Club Gym Manager
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A club operations app for staff to manage memberships, attendance, sessions, approvals, training logs, and payments from shared PostgreSQL-backed data.
 
 ## Run & Operate
 
@@ -22,15 +22,22 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/club-gym-manager` — React web application
+- `artifacts/api-server/src/routes/gym.ts` — gym API endpoints
+- `lib/db/src/schema/` — Drizzle PostgreSQL tables
+- `lib/api-spec/openapi.yaml` — API contract source of truth
+- `lib/api-client-react/src/generated/` and `lib/api-zod/src/generated/` — generated API hooks and validation
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The frontend consumes generated React Query hooks; API request/response contracts are defined in OpenAPI first.
+- Medical hold is stored as `hold`; the API also accepts the display label `medical hold`.
+- The staff role selector changes visible screens only. It is not authentication or server-enforced authorization.
+- Payments are recorded in GMD dalasi and extend the selected member's plan term without clearing medical holds.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Staff can review club activity, check members in, manage member records and registrations, schedule sessions and bookings, record training work, and track payment history. Public visitors can submit a registration request for staff approval.
 
 ## User preferences
 
@@ -38,7 +45,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- When changing API endpoints, update `lib/api-spec/openapi.yaml` and regenerate with `pnpm --filter @workspace/api-spec run codegen`.
+- Run `pnpm --filter @workspace/db run push` after changing Drizzle schemas.
 
 ## Pointers
 
