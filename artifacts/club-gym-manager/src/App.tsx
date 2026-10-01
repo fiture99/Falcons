@@ -295,19 +295,21 @@ function PaymentsPage() {
 }
 function SignUpQrPage() {
   const [copyState,setCopyState]=useState<'idle'|'copied'|'error'>('idle');
+  const [downloadState,setDownloadState]=useState<'idle'|'downloaded'|'error'>('idle');
   const joinPath=`${import.meta.env.BASE_URL.replace(/\/$/,'')}/join`;
   const registrationUrl=new URL(joinPath,window.location.origin).toString();
   const copyLink=async()=>{try{await navigator.clipboard.writeText(registrationUrl);setCopyState('copied');}catch{setCopyState('error');}};
-  const downloadQr=()=>{const svg=document.querySelector('[data-testid="qr-membership-signup"] svg');if(!(svg instanceof SVGSVGElement))return;const content=new XMLSerializer().serializeToString(svg);const blob=new Blob([content],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='falcons-fc-membership-signup.svg';link.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);};
+  const downloadQr=async()=>{setDownloadState('idle');const svg=document.querySelector('[data-testid="qr-membership-signup"] svg');if(!(svg instanceof SVGSVGElement)){setDownloadState('error');return;}try{const response=await fetch(clubCrestUrl);if(!response.ok)throw new Error('Falcons crest could not be loaded.');const crestBlob=await response.blob();const crestDataUrl=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>typeof reader.result==='string'?resolve(reader.result):reject(new Error('Falcons crest could not be encoded.'));reader.onerror=()=>reject(reader.error??new Error('Falcons crest could not be encoded.'));reader.readAsDataURL(crestBlob);});let content=new XMLSerializer().serializeToString(svg);content=content.replaceAll(clubCrestUrl,crestDataUrl).replaceAll(new URL(clubCrestUrl,window.location.href).href,crestDataUrl);const blob=new Blob([content],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='falcons-fc-membership-signup.svg';link.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);setDownloadState('downloaded');}catch(error){console.error('Could not prepare the branded membership QR code.',error);setDownloadState('error');}};
   return <>
     <Heading eyebrow="New memberships" title="Sign-up QR code" subtitle="Share this code so prospective members can open the registration form on their phone."/>
     <div className="grid gap-5 xl:grid-cols-[1fr_.9fr]">
       <Panel title="Scan to register">
         <div className="flex flex-col items-center p-6 text-center">
-          <div data-testid="qr-membership-signup" className="rounded-2xl border border-border bg-white p-4 shadow-sm"><QRCodeSVG value={registrationUrl} size={224} level="H" marginSize={3} fgColor="#2340b3" title="Scan to open club membership registration"/></div>
+          <div data-testid="qr-membership-signup" className="rounded-2xl border border-border bg-white p-4 shadow-sm"><QRCodeSVG value={registrationUrl} size={224} level="H" marginSize={3} fgColor="#2340b3" imageSettings={{src:clubCrestUrl,width:48,height:48,excavate:true}} title="Scan to open club membership registration"/></div>
           <p className="mt-4 text-sm font-semibold">Membership registration</p>
           <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">Scan with a phone camera to choose a membership type and submit a request for staff approval.</p>
-          <div className="mt-5 flex flex-wrap justify-center gap-2"><Btn onClick={downloadQr} variant="outline" testId="button-download-signup-qr"><Download size={14}/> Download QR</Btn><Btn onClick={copyLink} variant="outline" testId="button-copy-registration-link"><Copy size={14}/>{copyState==='copied'?'Link copied':'Copy link'}</Btn></div>
+          <div className="mt-5 flex flex-wrap justify-center gap-2"><Btn onClick={downloadQr} variant="outline" testId="button-download-signup-qr"><Download size={14}/>{downloadState==='downloaded'?'QR downloaded':'Download QR'}</Btn><Btn onClick={copyLink} variant="outline" testId="button-copy-registration-link"><Copy size={14}/>{copyState==='copied'?'Link copied':'Copy link'}</Btn></div>
+          {downloadState==='error'&&<p className="mt-2 text-xs text-destructive" role="alert">Could not prepare the branded QR download. Please try again.</p>}
           {copyState==='error'&&<p className="mt-2 text-xs text-destructive" role="alert">Could not copy automatically. Select and copy the link shown beside the QR code.</p>}
         </div>
       </Panel>
