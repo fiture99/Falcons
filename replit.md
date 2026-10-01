@@ -1,6 +1,6 @@
-# Club Gym Manager
+# Falcons FC Club Manager
 
-A club operations app for staff to manage memberships, attendance, sessions, approvals, training logs, and payments from shared PostgreSQL-backed data.
+A club operations app for Falcons FC staff to manage memberships, attendance, sessions, approvals, training logs, and payments from shared PostgreSQL-backed data.
 
 ## Run & Operate
 
@@ -31,13 +31,14 @@ A club operations app for staff to manage memberships, attendance, sessions, app
 ## Architecture decisions
 
 - The frontend consumes generated React Query hooks; API request/response contracts are defined in OpenAPI first.
+- Falcons FC branding uses the supplied blue-and-white crest; keep the staff workspace and member registration visuals consistent with it.
 - Medical hold is stored as `hold`; the API also accepts the display label `medical hold`.
 - The staff role selector changes visible screens only. It is not authentication or server-enforced authorization.
 - Payments are recorded in GMD dalasi and extend the selected member's plan term without clearing medical holds.
 
 ## Product
 
-Staff can review club activity, check members in, manage member records and registrations, schedule sessions and bookings, record training work, and track payment history. Public visitors can submit a registration request for staff approval.
+Falcons FC staff can review club activity, check members in, manage member records and registrations, schedule sessions and bookings, record training work, and track payment history. Public visitors can submit a registration request for staff approval.
 
 ## User preferences
 
